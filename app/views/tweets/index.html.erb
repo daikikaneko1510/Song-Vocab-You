@@ -1,0 +1,59 @@
+<%= form_tag({controller:"tweets",action:"index"}, method: :get) do %>
+  <%= text_field_tag :search %>
+   <% Tag.all.each do |t| %>
+    <%= check_box :tag_ids, t.name %><%= t.name %>
+  <% end %>
+  <%= submit_tag '検索' %>
+<% end %>
+
+
+<%= link_to "洋楽を追加する", new_tweet_path %>
+<% if user_signed_in? %>
+    <%= link_to "マイページへ", user_path(current_user.id) %>
+<% end %>
+  <br>
+  <% if params[:search] == nil %>
+  <% else %>
+    <%= params[:search] %>の検索結果
+  <% end %>
+
+
+<br>
+<h2>洋楽一覧</h2>
+
+<div class="tweets-container">
+  <% @tweets.each do |t| %>
+    <div class="tweet">
+    <br>
+    <h4><%= t.song_name %>
+    <br>
+    <%= t.musician %></h4>
+    <%= truncate(highlight(t.lyrics, params[:search]), length: 90, escape: false)%>
+    <br>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/<%= find_youtube_url(t.youtube_url) %>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <br> 
+    <% t.tags.each do |tag| %>  
+      <%= link_to tag.name, tag_tweets_path(tag_id: tag.id) %>
+    <% end %>
+    <%= link_to "詳細へ", tweet_path(t.id) %> 
+    
+    <% if user_signed_in? && current_user.id == t.user_id %>
+      <%= link_to "編集する", edit_tweet_path(t.id) %>
+      <%= link_to "削除する", tweet_path(t.id), data: { turbo_method: :delete } %>
+    <% end %>
+    
+    <% if user_signed_in? %>
+      <% if current_user.already_liked?(t) %>
+        <%= link_to tweet_like_path(id: t.id, tweet_id: t.id), data: { turbo_method: :delete } do %>
+        <i class="fas fa-heart" style="color:red;"></i><%= t.likes.count %>
+        <% end %>  
+      <% else %>
+        <%= link_to tweet_likes_path(id: t.id, tweet_id: t.id), data: { turbo_method: :post }  do %>
+          <i class="far fa-heart" style="color:red;"></i><%= t.likes.count %>
+        <% end %>
+      <% end %>   
+    <% else %>
+      <i class="far fa-heart" style="color:red;"></i><%= t.likes.count %>
+    <% end %>
+  <% end %>
+</div>

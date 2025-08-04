@@ -1,0 +1,37 @@
+<h2>洋楽を追加する</h2>
+<%= form_for @tweet do |f| %>
+
+  <div class='form-group'>
+        <%= f.collection_check_boxes(:tag_ids, Tag.all, :id, :name) do |tag| %>
+            <div class='form-check'>
+                <%= tag.label class: 'form-check-label' do %>
+                    <%= tag.check_box class: 'form-check-input' %>
+                    <%= tag.text %>
+                <% end %>
+            </div>
+        <% end %>
+    </div>
+
+  <div class="field">
+    <%= f.label :song_name %>
+    <%= f.text_field :song_name, :size => 30 %>
+  </div>
+
+   <div class="field">
+    <%= f.label :musician %>
+    <%= f.text_field :musician, :size => 30 %>
+  </div>
+
+  <div class="field">
+    <%= f.label :lyrics  %>
+    <%= f.text_area :lyrics, :size => "30x2" %>
+  </div>
+
+   <%= f.label :youtube_url %>
+    <%= f.text_field :youtube_url, :size => 140 %>
+<br>
+  <%= f.submit "投稿する" %>
+
+<% end %>
+
+<%= link_to "一覧に戻る", tweets_path %>

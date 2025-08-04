@@ -1,0 +1,21 @@
+
+
+<%= "#{@tag.name}" %>
+<br>
+<% @itirans.each do |t| %>
+    <%= link_to t.song_name, t %>
+    <p><%= t.musician %></p>
+  <% if user_signed_in? %>
+    <%= truncate(highlight(t.lyrics, current_user.karihozon), length: 90, escape: false) %>
+  <% else %>
+    <%= t.lyrics.truncate(50) %>
+  <% end %>
+  <br>  
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/<%= find_youtube_url(t.youtube_url) %>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <br>
+    <% t.tags.each do |tag| %>
+    <%= link_to tag.name, tag_tweets_path(tag_id: tag.id) %>
+    <% end %>
+<% end %>
+<br>
+<%= link_to "一覧に戻る", tweets_path %>
